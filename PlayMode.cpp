@@ -176,6 +176,9 @@ void PlayMode::go_to_node(std::string const &name) {
 }
 
 void PlayMode::take_choice(uint32_t index) {
+	if (index >= visible_choices.size()) {
+		return;
+	}
 	Story::Choice const &choice = *visible_choices[index];
 
 	for (std::string const &flag : choice.set_flags) {

@@ -111,7 +111,7 @@ Story make_story() {
 		.choices = {
 			{ .text = "Combine with handle", .go_to = "SCREWDRIVER", .need = {"has_drill", "has_handle"},
                 .set_flags = {"has_screwdriver"}},
-			{ .text = "Go back", .go_to = "BED", .need_not = {"has_drill", "has_handle"}},
+			{ .text = "Go back", .go_to = "BED", .need_not = {"has_handle"}},
 		},
 	};
 
@@ -150,11 +150,11 @@ Story make_story() {
 		.choices = {
 			{ .text = "Combine with drill", .go_to = "SCREWDRIVER", .need = {"has_drill", "has_handle"},
                 .set_flags = {"has_screwdriver"}},
-			{ .text = "Go back", .go_to = "BED", .need_not = {"has_drill", "has_handle"}},
+			{ .text = "Go back", .go_to = "BED", .need_not = {"has_drill"}},
 		},
 	};
 
-    story.nodes["SCREWDRIVIER"] = {
+    story.nodes["SCREWDRIVER"] = {
 		.camera = "StartCamera",
 		.text = "You combine the drill and the handle. You have managed to create a flimsy screwdriver!",
 		.choices = {
@@ -173,7 +173,7 @@ Story make_story() {
 		.choices = {
 			{ .text = "Push against the door again", .go_to = "DOORTRYOPEN"},
 			{ .text = "Investigate what you have for dinner", .go_to = "FOOD"},
-            { .text = "Use the wax key to open the door", .go_to = "ESCAPE", .need = {"has_key"}},
+            { .text = "Use the wax key to open the door", .go_to = "ESCAPE", .need = {"has_key"}, .hide_meshes = {"Cube"}},
 			{ .text = "Go back", .go_to = "CELL" },
 		},
 	};
@@ -228,7 +228,8 @@ Story make_story() {
             { .text = "Take a ball", .go_to = "VENT", .need = {"ball1"}, .need_not = {"ball2"}, .set_flags = {"ball2"}, .hide_meshes = {"Ball2"}},
             { .text = "Take a ball", .go_to = "VENT", .need = {"ball2"}, .need_not = {"ball3"}, .set_flags = {"ball3"}, .hide_meshes = {"Ball3"}},
             { .text = "Take a ball", .go_to = "CODE", .need = {"ball3"}, .need_not = {"ball4"}, .set_flags = {"ball4", "has_code"}, .hide_meshes = {"Ball4"}},
-            { .text = "Investigate the vent", .go_to = "VENTCLOSE" },
+            { .text = "Investigate the vent", .go_to = "VENTCLOSE", .need_not = {"vent_open"}},
+            { .text = "Investigate the vent", .go_to = "VENTOPEN", .need = {"vent_open"}},
 			{ .text = "Go back", .go_to = "CELL" },
 		},
 	};
@@ -263,6 +264,23 @@ Story make_story() {
 		},
 	};
 
+    story.nodes["MOLD"] = {
+		.camera = "VentCamera",
+		.text = "You pick up the item. It seems to be a mold for some sort of key. Maybe the key to the door? "
+                "What would you use to make the key however?",
+		.choices = {
+			{ .text = "Go back", .go_to = "VENT" },
+		},
+	};
+
+
+    story.nodes["KEY"] = {
+		.camera = "CandleCamera",
+		.text = "You pour the melted wax into the mold and wait. After a while you have made a key of wax!",
+		.choices = {
+			{ .text = "Go back", .go_to = "BED" },
+		},
+	};
 
 
 	//----- endings (no choices) -----
