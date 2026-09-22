@@ -20,3 +20,5 @@ Sources: (TODO: list a source URL for any assets you did not create yourself. Ma
 
 This game was built with [NEST](NEST.md).
 
+Kings Font designed by Robert Leuschke. Downloaded from Google Fonts and are licensed under the Open Font License
+https://fonts.google.com/specimen/Kings?preview.script=Latn

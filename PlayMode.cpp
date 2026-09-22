@@ -7,10 +7,16 @@
 #include "Load.hpp"
 #include "gl_errors.hpp"
 #include "data_path.hpp"
+#include "TextRenderer.hpp"
 
 #include <glm/gtc/type_ptr.hpp>
 
 #include <random>
+
+// Using Kings Font designed by Robert Leuschke.
+// Downloaded from Google Fonts and are licensed under the Open Font License
+// https://fonts.google.com/specimen/Kings?preview.script=Latn
+
 
 GLuint hexapod_meshes_for_lit_color_texture_program = 0;
 Load< MeshBuffer > hexapod_meshes(LoadTagDefault, []() -> MeshBuffer const * {
@@ -45,6 +51,9 @@ Load< Sound::Sample > honk_sample(LoadTagDefault, []() -> Sound::Sample const * 
 	return new Sound::Sample(data_path("honk.wav"));
 });
 
+Load<TextRenderer> text_renderer(LoadTagDefault, []() -> TextRenderer const* {
+	return new TextRenderer(data_path("Kings-Regular.ttf"), 36);
+});
 
 PlayMode::PlayMode() : scene(*hexapod_scene) {
 	//get pointers to leg for convenience:
@@ -215,26 +224,10 @@ void PlayMode::draw(glm::uvec2 const &drawable_size) {
 
 	scene.draw(*camera);
 
-	{ //use DrawLines to overlay some text:
-		glDisable(GL_DEPTH_TEST);
-		float aspect = float(drawable_size.x) / float(drawable_size.y);
-		DrawLines lines(glm::mat4(
-			1.0f / aspect, 0.0f, 0.0f, 0.0f,
-			0.0f, 1.0f, 0.0f, 0.0f,
-			0.0f, 0.0f, 1.0f, 0.0f,
-			0.0f, 0.0f, 0.0f, 1.0f
-		));
-
-		constexpr float H = 0.09f;
-		lines.draw_text("Mouse motion rotates camera; WASD moves; escape ungrabs mouse",
-			glm::vec3(-aspect + 0.1f * H, -1.0 + 0.1f * H, 0.0),
-			glm::vec3(H, 0.0f, 0.0f), glm::vec3(0.0f, H, 0.0f),
-			glm::u8vec4(0x00, 0x00, 0x00, 0x00));
-		float ofs = 2.0f / drawable_size.y;
-		lines.draw_text("Mouse motion rotates camera; WASD moves; escape ungrabs mouse",
-			glm::vec3(-aspect + 0.1f * H + ofs, -1.0 + + 0.1f * H + ofs, 0.0),
-			glm::vec3(H, 0.0f, 0.0f), glm::vec3(0.0f, H, 0.0f),
-			glm::u8vec4(0xff, 0xff, 0xff, 0x00));
+	{
+		float margin = 40.0f;
+		float maxWidth = float(drawable_size.x) - 2.0f * margin;
+		text_renderer->draw_text("Hello, is this working", glm::vec2(margin, margin), maxWidth, glm::u8vec4(0xff, 0xf0, 0xd0, 0xff), drawable_size);
 	}
 	GL_ERRORS();
 }
