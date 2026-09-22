@@ -1,32 +1,5 @@
 #include "Story.hpp"
 
-/*
- * ===== WRITE YOUR STORY HERE =====
- *
- * Each node looks like:
- *
- *   story.nodes["NODE_ID"] = {
- *       .camera = "Cam_Name",       //Blender camera object name
- *       .text = "Description...",   //shown at the top left
- *       .choices = {
- *           { .text = "Choice text", .go_to = "OTHER_NODE" },
- *           ...
- *       },
- *   };
- *
- * Choice options (all optional except text and go_to; keep them in this order):
- *   .need = {"flag"}            only show if these flags are set
- *   .need_not = {"flag"}        only show if these flags are NOT set
- *   .set_flags = {"flag"}       set these flags when chosen
- *   .hide_meshes = {"Object"}   hide these Blender objects when chosen
- *
- * A node with no choices is an ending (the player can press R to restart).
- * Choices are numbered 1, 2, 3... in the order they are visible.
- *
- * Everything below is an EXAMPLE -- replace the text, camera names, and mesh
- * names with your own. The game will tell you at startup if any name is wrong.
- */
-
  // StartCamera, DoorCamera, FoodCamera, BedCamera, UnderBedCamera, VentCamera, BallCamera, ChestCamera, CandleCamera
 
 Story make_story() {
