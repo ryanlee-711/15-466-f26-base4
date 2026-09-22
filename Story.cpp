@@ -146,7 +146,7 @@ Story make_story() {
 		.choices = {
 			{ .text = "Push against the door again", .go_to = "DOORTRYOPEN"},
 			{ .text = "Investigate what you have for dinner", .go_to = "FOOD"},
-            { .text = "Use the wax key to open the door", .go_to = "ESCAPE", .need = {"has_key"}, .hide_meshes = {"Cube"}},
+            { .text = "Use the wax key to open the door", .go_to = "ESCAPE", .need = {"has_key"}, .hide_meshes = {"Door"}},
 			{ .text = "Go back", .go_to = "CELL" },
 		},
 	};
