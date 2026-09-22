@@ -45,8 +45,8 @@ TextRenderer::TextRenderer(std::string const &font_path, uint32_t pixelSize) {
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, AtlasSize, AtlasSize, 0, GL_RED, GL_UNSIGNED_BYTE, zeros.data());
     }
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -198,7 +198,7 @@ TextRenderer::LoadedGlyph const &TextRenderer::get_glyph(uint32_t index) const {
 
 
 float TextRenderer::layout(std::string const &text, glm::vec2 topLeft, float maxWidth, glm::u8vec4 color,
-                           glm::uvec2 const &drawSize, std::vector<Vertex> *verts) const {
+                           glm::uvec2 const &drawSize, std::vector<Vertex> *verts, float scale) const {
 
     topLeft = glm::round(topLeft);
 
@@ -216,6 +216,8 @@ float TextRenderer::layout(std::string const &text, glm::vec2 topLeft, float max
 	auto clip = [&](float x, float y) {
 		return glm::vec2(x * to_clip.x - 1.0f, y * to_clip.y + 1.0f);
 	};
+
+    float wrapWidth = maxWidth / scale;
 
 	std::vector<Glyph> word;
 
@@ -239,7 +241,7 @@ float TextRenderer::layout(std::string const &text, glm::vec2 topLeft, float max
 		word.clear();
 		float word_width = shape_word(text.data() + at, int(end - at), word);
 
-		if (maxWidth > 0.0f && !line_empty && pen_x + word_width > maxWidth) {
+		if (wrapWidth > 0.0f && !line_empty && pen_x + word_width > wrapWidth) {
 			new_line();
 		}
 
@@ -248,10 +250,10 @@ float TextRenderer::layout(std::string const &text, glm::vec2 topLeft, float max
 				LoadedGlyph const &cg = get_glyph(g.index);
 				if (cg.size.x == 0 || cg.size.y == 0) continue;
 
-				float x0 = topLeft.x + std::round(pen_x + g.offset.x) + cg.bearing.x;
-				float y0 = topLeft.y + std::round(baseline + g.offset.y) - cg.bearing.y;
-				float x1 = x0 + cg.size.x;
-				float y1 = y0 + cg.size.y;
+				float x0 = topLeft.x + std::round((pen_x + g.offset.x) * scale) + cg.bearing.x * scale;
+				float y0 = topLeft.y + std::round((baseline + g.offset.y) * scale) - cg.bearing.y * scale;
+				float x1 = x0 + cg.size.x * scale;
+				float y1 = y0 + cg.size.y * scale;
 
 				float u0 = cg.pos.x / float(AtlasSize);
 				float v0 = cg.pos.y / float(AtlasSize);
@@ -272,13 +274,13 @@ float TextRenderer::layout(std::string const &text, glm::vec2 topLeft, float max
 	}
 
 	//total height = number of lines * line height:
-	return baseline - ascender + line_height;
+	return (baseline - ascender + line_height) * scale;
 }
 
 
-float TextRenderer::draw_text(std::string const& text, glm::vec2 topLeft, float maxWidth, glm::u8vec4 color, glm::uvec2 const& drawSize) const {
+float TextRenderer::draw_text(std::string const& text, glm::vec2 topLeft, float maxWidth, glm::u8vec4 color, glm::uvec2 const& drawSize, float scale) const {
     vertex_scratch.clear();
-    float height = layout(text, topLeft, maxWidth, color, drawSize, &vertex_scratch);
+    float height = layout(text, topLeft, maxWidth, color, drawSize, &vertex_scratch, scale);
     if (vertex_scratch.empty()) return height;
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -305,6 +307,6 @@ float TextRenderer::draw_text(std::string const& text, glm::vec2 topLeft, float 
 	return height;
 }
 
-float TextRenderer::measure_height(std::string const& text, float maxWidth) const {
-    return layout(text, glm::vec2(0.0f), maxWidth, glm::u8vec4(0), glm::uvec2(1), nullptr);
+float TextRenderer::measure_height(std::string const& text, float maxWidth, float scale) const {
+    return layout(text, glm::vec2(0.0f), maxWidth, glm::u8vec4(0), glm::uvec2(1), nullptr, scale);
 }

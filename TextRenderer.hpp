@@ -19,9 +19,9 @@ struct TextRenderer {
 	TextRenderer &operator=(TextRenderer const &) = delete;
 
     // Function to actually draw the text
-    float draw_text(std::string const& text, glm::vec2 topLeft, float maxWidth, glm::u8vec4 color, glm::uvec2 const& drawSize) const;
+    float draw_text(std::string const& text, glm::vec2 topLeft, float maxWidth, glm::u8vec4 color, glm::uvec2 const& drawSize, float scale = 1.0f) const;
 
-    float measure_height(std::string const& text, float maxWidth) const;
+    float measure_height(std::string const& text, float maxWidth, float scale = 1.0f) const;
 
     // Font metrics
 	float ascender = 0.0f; //distance from the top of a line to its baseline
@@ -55,7 +55,7 @@ private:
     LoadedGlyph const &get_glyph(uint32_t index) const;
 
     float layout(std::string const &text, glm::vec2 topLeft, float maxWidth, glm::u8vec4 color,
-                 glm::uvec2 const &drawSize, std::vector<Vertex> *verts) const;
+                 glm::uvec2 const &drawSize, std::vector<Vertex> *verts, float scale) const;
 
     FT_Library ft_library;
     FT_Face ft_face;
@@ -63,7 +63,7 @@ private:
     hb_buffer_t *hb_buffer;
 
     static constexpr int AtlasSize = 1024;
-    static constexpr int Padding = 1;
+    static constexpr int Padding = 2;
     GLuint atlas_tex = 0;
     mutable std::unordered_map<uint32_t, LoadedGlyph> glyph_cache;
     mutable glm::ivec2 atlas_cursor = glm::ivec2(Padding); //Where next glyph goes
